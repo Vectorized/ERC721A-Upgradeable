@@ -4,18 +4,11 @@
 
 pragma solidity ^0.8.4;
 
-import './ERC721AMockUpgradeable.sol';
-import './StartTokenIdHelperUpgradeable.sol';
-import {StartTokenIdHelperStorage} from './StartTokenIdHelperStorage.sol';
-import '../ERC721A__Initializable.sol';
+import "./ERC721AMockUpgradeable.sol";
+import "./StartTokenIdHelperUpgradeable.sol";
+import "../ERC721A__Initializable.sol";
 
-contract ERC721AStartTokenIdMockUpgradeable is
-    ERC721A__Initializable,
-    StartTokenIdHelperUpgradeable,
-    ERC721AMockUpgradeable
-{
-    using StartTokenIdHelperStorage for StartTokenIdHelperStorage.Layout;
-
+contract ERC721AStartTokenIdMockUpgradeable is ERC721A__Initializable, StartTokenIdHelperUpgradeable, ERC721AMockUpgradeable {
     function __ERC721AStartTokenIdMock_init(
         string memory name_,
         string memory symbol_,
@@ -23,6 +16,7 @@ contract ERC721AStartTokenIdMockUpgradeable is
     ) internal onlyInitializingERC721A {
         __StartTokenIdHelper_init_unchained(startTokenId_);
         __ERC721A_init_unchained(name_, symbol_);
+        __DirectBurnBitSetterHelper_init_unchained();
         __ERC721AMock_init_unchained(name_, symbol_);
         __ERC721AStartTokenIdMock_init_unchained(name_, symbol_, startTokenId_);
     }
@@ -34,6 +28,6 @@ contract ERC721AStartTokenIdMockUpgradeable is
     ) internal onlyInitializingERC721A {}
 
     function _startTokenId() internal view override returns (uint256) {
-        return StartTokenIdHelperStorage.layout().startTokenId;
+        return startTokenId();
     }
 }

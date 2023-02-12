@@ -4,23 +4,18 @@
 
 pragma solidity ^0.8.4;
 
-import './ERC721AMockUpgradeable.sol';
-import '../ERC721A__Initializable.sol';
+import "./ERC721AMockUpgradeable.sol";
+import "../ERC721A__Initializable.sol";
 
 contract ERC721ATransferCounterMockUpgradeable is ERC721A__Initializable, ERC721AMockUpgradeable {
-    function __ERC721ATransferCounterMock_init(string memory name_, string memory symbol_)
-        internal
-        onlyInitializingERC721A
-    {
+    function __ERC721ATransferCounterMock_init(string memory name_, string memory symbol_) internal onlyInitializingERC721A {
         __ERC721A_init_unchained(name_, symbol_);
+        __DirectBurnBitSetterHelper_init_unchained();
         __ERC721AMock_init_unchained(name_, symbol_);
         __ERC721ATransferCounterMock_init_unchained(name_, symbol_);
     }
 
-    function __ERC721ATransferCounterMock_init_unchained(string memory, string memory)
-        internal
-        onlyInitializingERC721A
-    {}
+    function __ERC721ATransferCounterMock_init_unchained(string memory, string memory) internal onlyInitializingERC721A {}
 
     function _extraData(
         address from,

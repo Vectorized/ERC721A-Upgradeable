@@ -4,9 +4,9 @@
 
 pragma solidity ^0.8.4;
 
-import './IERC721AUpgradeable.sol';
-import {ERC721AStorage} from './ERC721AStorage.sol';
-import './ERC721A__Initializable.sol';
+import "./IERC721AUpgradeable.sol";
+import { ERC721AStorage } from "./ERC721AStorage.sol";
+import "./ERC721A__Initializable.sol";
 
 /**
  * @dev Interface of ERC721 token receiver.
@@ -37,6 +37,7 @@ interface ERC721A__IERC721ReceiverUpgradeable {
  */
 contract ERC721AUpgradeable is ERC721A__Initializable, IERC721AUpgradeable {
     using ERC721AStorage for ERC721AStorage.Layout;
+    
 
     // =============================================================
     //                           CONSTANTS
@@ -169,16 +170,14 @@ contract ERC721AUpgradeable is ERC721A__Initializable, IERC721AUpgradeable {
      * Returns the number of tokens minted by `owner`.
      */
     function _numberMinted(address owner) internal view returns (uint256) {
-        return
-            (ERC721AStorage.layout()._packedAddressData[owner] >> _BITPOS_NUMBER_MINTED) & _BITMASK_ADDRESS_DATA_ENTRY;
+        return (ERC721AStorage.layout()._packedAddressData[owner] >> _BITPOS_NUMBER_MINTED) & _BITMASK_ADDRESS_DATA_ENTRY;
     }
 
     /**
      * Returns the number of tokens burned by or on behalf of `owner`.
      */
     function _numberBurned(address owner) internal view returns (uint256) {
-        return
-            (ERC721AStorage.layout()._packedAddressData[owner] >> _BITPOS_NUMBER_BURNED) & _BITMASK_ADDRESS_DATA_ENTRY;
+        return (ERC721AStorage.layout()._packedAddressData[owner] >> _BITPOS_NUMBER_BURNED) & _BITMASK_ADDRESS_DATA_ENTRY;
     }
 
     /**
@@ -294,6 +293,14 @@ contract ERC721AUpgradeable is ERC721A__Initializable, IERC721AUpgradeable {
     }
 
     /**
+     * @dev Returns whether the ownership slot at `index` is initialized.
+     * An uninitialized slot does not necessarily mean that the slot has no owner.
+     */
+    function _ownershipIsInitialized(uint256 index) internal view virtual returns (bool) {
+        return ERC721AStorage.layout()._packedOwnerships[index] != 0;
+    }
+
+    /**
      * @dev Initializes the ownership slot minted at `index` for efficiency purposes.
      */
     function _initializeOwnershipAt(uint256 index) internal virtual {
@@ -308,34 +315,35 @@ contract ERC721AUpgradeable is ERC721A__Initializable, IERC721AUpgradeable {
     function _packedOwnershipOf(uint256 tokenId) private view returns (uint256 packed) {
         if (_startTokenId() <= tokenId) {
             packed = ERC721AStorage.layout()._packedOwnerships[tokenId];
-            // If not burned.
-            if (packed & _BITMASK_BURNED == 0) {
-                // If the data at the starting slot does not exist, start the scan.
-                if (packed == 0) {
-                    if (tokenId >= ERC721AStorage.layout()._currentIndex)
-                        _revert(OwnerQueryForNonexistentToken.selector);
-                    // Invariant:
-                    // There will always be an initialized ownership slot
-                    // (i.e. `ownership.addr != address(0) && ownership.burned == false`)
-                    // before an unintialized ownership slot
-                    // (i.e. `ownership.addr == address(0) && ownership.burned == false`)
-                    // Hence, `tokenId` will not underflow.
-                    //
-                    // We can directly compare the packed value.
-                    // If the address is zero, packed will be zero.
-                    for (;;) {
-                        unchecked {
-                            packed = ERC721AStorage.layout()._packedOwnerships[--tokenId];
-                        }
-                        if (packed == 0) continue;
-                        return packed;
+            // If the data at the starting slot does not exist, start the scan.
+            if (packed == 0) {
+                if (tokenId >= ERC721AStorage.layout()._currentIndex) _revert(OwnerQueryForNonexistentToken.selector);
+                // Invariant:
+                // There will always be an initialized ownership slot
+                // (i.e. `ownership.addr != address(0) && ownership.burned == false`)
+                // before an unintialized ownership slot
+                // (i.e. `ownership.addr == address(0) && ownership.burned == false`)
+                // Hence, `tokenId` will not underflow.
+                //
+                // We can directly compare the packed value.
+                // If the address is zero, packed will be zero.
+                for (;;) {
+                    unchecked {
+                        packed = ERC721AStorage.layout()._packedOwnerships[--tokenId];
                     }
+                    if (packed == 0) continue;
+                    if (packed & _BITMASK_BURNED == 0) return packed;
+                    // Otherwise, the token is burned, and we must revert.
+                    // This handles the case of batch burned tokens, where only the burned bit
+                    // of the starting slot is set, and remaining slots are left uninitialized.
+                    _revert(OwnerQueryForNonexistentToken.selector);
                 }
-                // Otherwise, the data exists and is not burned. We can skip the scan.
-                // This is possible because we have already achieved the target condition.
-                // This saves 2143 gas on transfers of initialized tokens.
-                return packed;
             }
+            // Otherwise, the data exists and we can skip the scan.
+            // This is possible because we have already achieved the target condition.
+            // This saves 2143 gas on transfers of initialized tokens.
+            // If the token is not burned, return `packed`. Otherwise, revert.
+            if (packed & _BITMASK_BURNED == 0) return packed;
         }
         _revert(OwnerQueryForNonexistentToken.selector);
     }
@@ -670,9 +678,9 @@ contract ERC721AUpgradeable is ERC721A__Initializable, IERC721AUpgradeable {
         uint256 tokenId,
         bytes memory _data
     ) private returns (bool) {
-        try
-            ERC721A__IERC721ReceiverUpgradeable(to).onERC721Received(_msgSenderERC721A(), from, tokenId, _data)
-        returns (bytes4 retval) {
+        try ERC721A__IERC721ReceiverUpgradeable(to).onERC721Received(_msgSenderERC721A(), from, tokenId, _data) returns (
+            bytes4 retval
+        ) {
             return retval == ERC721A__IERC721ReceiverUpgradeable(to).onERC721Received.selector;
         } catch (bytes memory reason) {
             if (reason.length == 0) {
