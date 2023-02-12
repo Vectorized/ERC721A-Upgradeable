@@ -4,10 +4,10 @@
 
 pragma solidity ^0.8.4;
 
-import './IERC4907AUpgradeable.sol';
-import '../ERC721AUpgradeable.sol';
-import {ERC4907AStorage} from './ERC4907AStorage.sol';
-import '../ERC721A__Initializable.sol';
+import "./IERC4907AUpgradeable.sol";
+import "../ERC721AUpgradeable.sol";
+import { ERC4907AStorage } from "./ERC4907AStorage.sol";
+import "../ERC721A__Initializable.sol";
 
 /**
  * @title ERC4907A
@@ -18,13 +18,12 @@ import '../ERC721A__Initializable.sol';
  */
 abstract contract ERC4907AUpgradeable is ERC721A__Initializable, ERC721AUpgradeable, IERC4907AUpgradeable {
     using ERC4907AStorage for ERC4907AStorage.Layout;
-
     function __ERC4907A_init() internal onlyInitializingERC721A {
         __ERC4907A_init_unchained();
     }
 
-    function __ERC4907A_init_unchained() internal onlyInitializingERC721A {}
-
+    function __ERC4907A_init_unchained() internal onlyInitializingERC721A {
+    }
     // The bit position of `expires` in packed user info.
     uint256 private constant _BITPOS_EXPIRES = 160;
 
@@ -47,9 +46,7 @@ abstract contract ERC4907AUpgradeable is ERC721A__Initializable, ERC721AUpgradea
             if (!isApprovedForAll(owner, _msgSenderERC721A()))
                 if (getApproved(tokenId) != _msgSenderERC721A()) _revert(SetUserCallerNotOwnerNorApproved.selector);
 
-        ERC4907AStorage.layout()._packedUserInfo[tokenId] =
-            (uint256(expires) << _BITPOS_EXPIRES) |
-            uint256(uint160(user));
+        ERC4907AStorage.layout()._packedUserInfo[tokenId] = (uint256(expires) << _BITPOS_EXPIRES) | uint256(uint160(user));
 
         emit UpdateUser(tokenId, user, expires);
     }
@@ -83,13 +80,7 @@ abstract contract ERC4907AUpgradeable is ERC721A__Initializable, ERC721AUpgradea
     /**
      * @dev Override of {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(ERC721AUpgradeable, IERC721AUpgradeable)
-        returns (bool)
-    {
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721AUpgradeable, IERC721AUpgradeable) returns (bool) {
         // The interface ID for ERC4907 is `0xad092b5c`,
         // as defined in [ERC4907](https://eips.ethereum.org/EIPS/eip-4907).
         return super.supportsInterface(interfaceId) || interfaceId == 0xad092b5c;

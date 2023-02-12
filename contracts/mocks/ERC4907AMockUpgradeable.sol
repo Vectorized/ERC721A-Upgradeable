@@ -4,8 +4,8 @@
 
 pragma solidity ^0.8.4;
 
-import '../extensions/ERC4907AUpgradeable.sol';
-import '../ERC721A__Initializable.sol';
+import "../extensions/ERC4907AUpgradeable.sol";
+import "../ERC721A__Initializable.sol";
 
 contract ERC4907AMockUpgradeable is ERC721A__Initializable, ERC721AUpgradeable, ERC4907AUpgradeable {
     function __ERC4907AMock_init(string memory name_, string memory symbol_) internal onlyInitializingERC721A {
@@ -20,13 +20,7 @@ contract ERC4907AMockUpgradeable is ERC721A__Initializable, ERC721AUpgradeable, 
         _mint(to, quantity);
     }
 
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(ERC721AUpgradeable, ERC4907AUpgradeable)
-        returns (bool)
-    {
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721AUpgradeable, ERC4907AUpgradeable) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 

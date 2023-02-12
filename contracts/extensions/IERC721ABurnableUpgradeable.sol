@@ -4,7 +4,7 @@
 
 pragma solidity ^0.8.4;
 
-import '../IERC721AUpgradeable.sol';
+import "../IERC721AUpgradeable.sol";
 
 /**
  * @dev Interface of ERC721ABurnable.

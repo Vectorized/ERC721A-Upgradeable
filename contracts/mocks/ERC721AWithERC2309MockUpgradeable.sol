@@ -4,8 +4,8 @@
 
 pragma solidity ^0.8.4;
 
-import '../ERC721AUpgradeable.sol';
-import '../ERC721A__Initializable.sol';
+import "../ERC721AUpgradeable.sol";
+import "../ERC721A__Initializable.sol";
 
 contract ERC721AWithERC2309MockUpgradeable is ERC721A__Initializable, ERC721AUpgradeable {
     function __ERC721AWithERC2309Mock_init(

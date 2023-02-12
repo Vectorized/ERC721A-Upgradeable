@@ -4,9 +4,9 @@
 
 pragma solidity ^0.8.4;
 
-import '../ERC721AUpgradeable.sol';
-import {ERC721ReceiverMockStorage} from './ERC721ReceiverMockStorage.sol';
-import '../ERC721A__Initializable.sol';
+import "../ERC721AUpgradeable.sol";
+import { ERC721ReceiverMockStorage } from "./ERC721ReceiverMockStorage.sol";
+import "../ERC721A__Initializable.sol";
 
 interface IERC721AMockUpgradeable {
     function safeMint(address to, uint256 quantity) external;
